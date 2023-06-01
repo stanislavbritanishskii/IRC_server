@@ -10,6 +10,8 @@
 #define PORT 8080
 #define MAX_EVENTS 5
 
+// check change
+
 int main()
 {
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
