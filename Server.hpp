@@ -27,6 +27,8 @@ public:
 	int pollIn(int i);
 	int newClient();
 	int handleMessage(int i);
+	int disconnectUser(int i, int ret);
+	int processMessage(char *buffer, int i);
 };
 
 #endif

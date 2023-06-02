@@ -66,6 +66,7 @@ int Server::process()
 		{
 			std::cout << "pollhup fd " << _fds[i].fd << std::endl;
 		}
+		std::cout << _fds[i].revents << std::endl;
 	}
 	return 1;
 }
@@ -89,40 +90,7 @@ int Server::pollIn(int i)
 	if (_fds[i].fd == _mainSocketFD)
 		return newClient();
 	else
-	{
 		return handleMessage(i);
-//		char buffer[1024];
-//		memset(buffer, 0, sizeof(buffer));
-//		int ret = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
-//		if (ret <= 0) {
-//			if (ret < 0) {
-//				std::cerr << "recv failed: " << strerror(errno) << std::endl;
-//
-//			}
-//			std::cout << "disconnecting" << std::endl;
-//			close(_fds[i].fd);
-//			_fds[i].fd = -1;
-//
-//			// Shift remaining clients to fill the gap
-//			for (int j = i; j < _nfds - 1; j++) {
-//				_fds[j] = _fds[j + 1];
-//			}
-//
-//			_nfds--;
-//		}
-//		else {
-//			std::cout << "Received message: " << buffer << std::endl;
-//
-//			// Example: Send a response back to the client
-//			const char* response = "Server received your message\n";
-//			ret = send(_fds[i].fd, response, strlen(response), 0);
-//			std::cout << _fds[i].fd << " " << _fds[i].events <<" " <<_fds[i].revents << std::endl;
-//			if (ret < 0) {
-//				std::cerr << "send failed: " << strerror(errno) << std::endl;
-//			}
-//		}
-	}
-	return 1;
 }
 
 
@@ -151,27 +119,36 @@ int Server::handleMessage(int i)
 	char buffer[1024];
 	memset(buffer, 0, sizeof(buffer));
 	int ret = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
-	if (ret <= 0) {
-		if (ret < 0) {
-			std::cerr << "recv failed: " << strerror(errno) << std::endl;
-		}
-		std::cout << "disconnecting" << std::endl;
-		close(_fds[i].fd);
-		_fds[i].fd = -1;
-		_fds.erase(_fds.begin() + i);
+	if (ret <= 0)
+		return disconnectUser(i, ret);
+	else
+		return processMessage(buffer, i);
+}
 
-		_nfds--;
+int Server::disconnectUser(int i, int ret)
+{
+	if (ret < 0) {
+		std::cerr << "recv failed: " << strerror(errno) << std::endl;
 	}
-	else {
-		std::cout << "Received message: " << buffer << std::endl;
+	std::cout << "disconnecting" << std::endl;
+	close(_fds[i].fd);
+	_fds[i].fd = -1;
+	_fds.erase(_fds.begin() + i);
 
-		// Example: Send a response back to the client
-		const char* response = "Server received your message\n";
-		ret = send(_fds[i].fd, response, strlen(response), 0);
-		std::cout << _fds[i].fd << " " << _fds[i].events <<" " <<_fds[i].revents << std::endl;
-		if (ret < 0) {
-			std::cerr << "send failed: " << strerror(errno) << std::endl;
-		}
+	_nfds--;
+	return 1;
+}
+
+int Server::processMessage(char *buffer, int i)
+{
+	std::cout << "Received message: " << buffer << std::endl;
+
+	// Example: Send a response back to the client
+	const char* response = "Server received your message\n";
+	int ret = send(_fds[i].fd, response, strlen(response), 0);
+	std::cout << _fds[i].fd << " " << _fds[i].events <<" " <<_fds[i].revents << std::endl;
+	if (ret < 0) {
+		std::cerr << "send failed: " << strerror(errno) << std::endl;
 	}
 	return 1;
 }
