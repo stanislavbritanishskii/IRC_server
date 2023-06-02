@@ -12,13 +12,13 @@ enum Actions
 	USER,
 	JOIN,
 	PRIVMSG,
-	NOTICE,
-	PING,
+	NOTICE, //
+	PING, //
 	KICK,
 	CAP,
-	WHO,
-	PART,
-	LIST,
+	WHO, //
+	PART, //
+	LIST, //
 	MODE,
 	TOPIC,
 	INVITE
