@@ -12,9 +12,12 @@
 #include <cstdio>
 #include <fcntl.h>
 
+#include "MessageManager.hpp"
+
 class Server
 {
 private:
+	MessageManager manager;
 	int _mainSocketFD;
 	std::string _pass;
 	int _nfds;

@@ -34,8 +34,6 @@ int Server::setup(int port, std::string pass)
 		return 0;
 	}
 
-//	struct pollfd fds[MAX_EVENTS];
-//	memset(fds, 0, sizeof(fds));
 	pollfd zero;
 	_fds.push_back(zero);
 	_fds[0].fd = _mainSocketFD;
@@ -142,6 +140,7 @@ int Server::disconnectUser(int i, int ret)
 int Server::processMessage(char *buffer, int i)
 {
 	std::cout << "Received message: " << buffer << std::endl;
+	manager.parseMessage(buffer);
 
 	// Example: Send a response back to the client
 	const char* response = "Server received your message\n";
