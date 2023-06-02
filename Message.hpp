@@ -1,12 +1,38 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
-
-class Message
+#include <vector>
+#include <string>
+#include <algorithm>
+enum Actions
 {
-public:
-	int	chat_id;
-	int user_id;
+	PASS,
+	NICK,
+	QUIT,
+	USER,
+	JOIN,
+	PRIVMSG,
+	NOTICE,
+	PING,
+	KICK,
+	CAP,
+	WHO,
+	PART,
+	LIST,
+	MODE,
+	TOPIC,
+	INVITE
 };
 
-#endif
+extern const std::vector<std::string> ACTIONS();
+
+struct Message
+{
+	int user_id;
+	std::string message;
+	std::string targetNick;
+	std::string targetChat;
+	int action;
+};
+
+#endif // MESSAGE_HPP

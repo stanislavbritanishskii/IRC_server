@@ -140,14 +140,27 @@ int Server::disconnectUser(int i, int ret)
 int Server::processMessage(char *buffer, int i)
 {
 	std::cout << "Received message: " << buffer << std::endl;
-	manager.parseMessage(buffer);
+	Message message =  manager.parseMessage(buffer, i);
+	std::cout << "action is " << ACTIONS()[message.action]<< std::endl;
 
 	// Example: Send a response back to the client
-	const char* response = "Server received your message\n";
-	int ret = send(_fds[i].fd, response, strlen(response), 0);
-	std::cout << _fds[i].fd << " " << _fds[i].events <<" " <<_fds[i].revents << std::endl;
-	if (ret < 0) {
-		std::cerr << "send failed: " << strerror(errno) << std::endl;
+	std::string response = "Server received your message bitch\n";
+	if (message.action == JOIN)
+	{
+		response = ":localhost MODE #chan +nt\r\n";
+		send(_fds[i].fd, response.c_str(), response.size(), 0);
+		response = ":localhost JOIN #chan\r\n";
+		send(_fds[i].fd, response.c_str(), response.size(), 0);
 	}
+	else
+	{
+		std::cout << response.c_str() << std::endl;
+
+		int ret = send(_fds[i].fd, response.c_str(), response.size(), 0);
+	}
+	std::cout << _fds[i].fd << " " << _fds[i].events <<" " <<_fds[i].revents << std::endl;
+//	if (ret < 0) {
+//		std::cerr << "send failed: " << strerror(errno) << std::endl;
+//	}
 	return 1;
 }
